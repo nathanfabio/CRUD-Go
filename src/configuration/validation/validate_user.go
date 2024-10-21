@@ -8,8 +8,9 @@ import (
 	"github.com/go-playground/locales/en"
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
+	"github.com/nathanfabio/CRUD-Go/src/configuration/errs"
 
-	en_translation "github.com/go-playground/validator/v10/translatons/en"
+	en_translation "github.com/go-playground/validator/v10/translations/en"
 )
 
 var (
@@ -18,7 +19,7 @@ var (
 )
 
 func init() {
-	if val, ok :=binding.Validator.Engine(). (*validator.Validate); ok {
+	if val, ok := binding.Validator.Engine(). (*validator.Validate); ok {
 		en := en.New()
 		unt := ut.New(en, en)
 		transl, _ := unt.GetTranslator("en")
@@ -27,18 +28,20 @@ func init() {
 }
 
 
-func ValidateUserError (validation_err error) *rest_err.RestErr {
+func ValidateUserError (
+	validation_err error,
+	) *errs.Errs {
 
 	var jsonErr *json.UnmarshalTypeError
 	var jsonValidationError validator.ValidationErrors
 
 	if errors.As(validation_err, &jsonErr) {
-		return rest_err.NewBadRequestErrs("Invalid field type")
+		return errs.NewBadRequestErrs("Invalid field type")
 	} else if errors.As(validation_err, &jsonValidationError) {
-		errorsCauses := []rest_err.Causes{}
+		errorsCauses := []errs.Causes{}
 
 		for _, e := range validation_err.(validator.ValidationErrors) {
-			cause := rest_err.Causes{
+			cause := errs.Causes{
 				Message: e.Translate(transl),
 				Field: e.Field(),
 			}
@@ -46,8 +49,8 @@ func ValidateUserError (validation_err error) *rest_err.RestErr {
 			errorsCauses = append(errorsCauses, cause)
 		}
 
-		return rest_err.NewBadRequestValidationErrs("Invalid fields", errorsCauses)
+		return errs.NewBadRequestValidationErrs("Invalid fields", errorsCauses)
 	} else {
-		return rest_err.NewBadRequestErrs("Error to convert fields")
+		return errs.NewBadRequestErrs("Error to convert fields")
 	}
 }
