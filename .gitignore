@@ -9,6 +9,10 @@
 *.dylib
 .env
 
+#Go air
+*.air.toml
+*.toml
+
 # Test binary, built with `go test -c`
 *.test
 
