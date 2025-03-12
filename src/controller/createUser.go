@@ -7,8 +7,12 @@ import (
 	"github.com/nathanfabio/CRUD-Go/src/configuration/logger"
 	"github.com/nathanfabio/CRUD-Go/src/configuration/validation"
 	"github.com/nathanfabio/CRUD-Go/src/controller/model/request"
-	"github.com/nathanfabio/CRUD-Go/src/controller/model/response"
+	"github.com/nathanfabio/CRUD-Go/src/model"
 	"go.uber.org/zap"
+)
+
+var (
+	UserDomainInterface model.UserDomainInterface
 )
 
 func CreateUser(c *gin.Context) {
@@ -29,17 +33,16 @@ func CreateUser(c *gin.Context) {
 
 	}
 
+	domain := model.NewUserDomain(userRequest.Email, userRequest.Password, userRequest.Name, userRequest.Age)
 	
-	response := response.UserResponse {
-		ID: "test",
-		Email: userRequest.Email,
-		Name: userRequest.Name,
-		Age: userRequest.Age,
+	if err := domain.CreateUser(); err != nil {
+		c.JSON(err.Code, err)
+		return
 	}
 
 	logger.Info("User created successfully", 
 		zap.String("journey", "Create a new user"),
 )
 
-	c.JSON(http.StatusOK, response)
+	c.String(http.StatusOK, "")
 }
