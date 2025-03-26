@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 
 	"github.com/nathanfabio/CRUD-Go/src/configuration/errs"
 	"github.com/nathanfabio/CRUD-Go/src/configuration/logger"
@@ -9,12 +8,21 @@ import (
 	"go.uber.org/zap"
 )
 
-func (ud *userDomainService) CreateUser(userDomain model.UserDomainInterface) *errs.Errs {
-	logger.Info("Init CreateUser model", zap.String("journey", "Create a new user"))
+func (ud *userDomainService) CreateUser(userDomain model.UserDomainInterface) (model.UserDomainInterface, *errs.Errs) {
+	logger.Info("Init CreateUser model", zap.String("journey", "createUser"))
 
 	userDomain.EncryptPassword()
 
-	fmt.Println(userDomain.GetPassword())
+	userDomainRepository, err := ud.userRepository.CreateUser(userDomain)
+	if err != nil {
+		logger.Error("Init CreateUser model", err, zap.String("journey", "createUser"))
+		return nil, err
+	}
 
-	return nil
+	logger.Info("CreateUSer service executed successfuly",
+		zap.String("userId", userDomainRepository.GetID()),
+		zap.String("journey", "createUser"),
+)
+
+	return userDomainRepository, nil
 }
