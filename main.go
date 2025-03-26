@@ -1,15 +1,14 @@
 package main
 
 import (
+	"context"
 	"log"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/nathanfabio/CRUD-Go/src/configuration/database/mongodb"
 	"github.com/nathanfabio/CRUD-Go/src/configuration/logger"
-	"github.com/nathanfabio/CRUD-Go/src/controller"
 	"github.com/nathanfabio/CRUD-Go/src/controller/routes"
-	"github.com/nathanfabio/CRUD-Go/src/model/service"
 )
 
 func main() {
@@ -20,16 +19,21 @@ func main() {
     log.Fatal("Error loading .env file")
 }
 
-	mongodb.InitConnection()
+	database, err := mongodb.NewMongoDBConnection(context.Background())
+	if err != nil {
+		log.Fatalf("Error to connect to database, error=%s\n", err.Error())
+		return
+	}
 
-	service := service.NewUserDomainService()
-	userController := controller.NewUserControllerInterface(service)
+	userController := initDependencies(database)
+	
+	
 
 	router:= gin.Default() //Create a new router. Could be gin.New(), but gin.New() initializes a router without any middleware. While
 	//gin.Default() initializes the router with logger and recovery middleware.
-
+	
 	routes.InitRoutes(&router.RouterGroup, userController)
-
+	
 	if err := router.Run(":8080"); err != nil {
 		log.Fatal(err)
 	}
