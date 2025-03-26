@@ -3,16 +3,19 @@ package service
 import (
 	"github.com/nathanfabio/CRUD-Go/src/configuration/errs"
 	"github.com/nathanfabio/CRUD-Go/src/model"
+	"github.com/nathanfabio/CRUD-Go/src/model/repository"
 )
 
-func NewUserDomainService() UserDomainService {
-	return &userDomainService{}
+func NewUserDomainService(userRepository repository.UserRepository) UserDomainService {
+	return &userDomainService{userRepository}
 }
 
-type userDomainService struct {}
+type userDomainService struct {
+	userRepository repository.UserRepository
+}
 
 type UserDomainService interface {
-	CreateUser(model.UserDomainInterface) *errs.Errs
+	CreateUser(model.UserDomainInterface) (model.UserDomainInterface, *errs.Errs)
 	UpdateUser(string, model.UserDomainInterface) *errs.Errs
 	FindUser(string) (*model.UserDomainInterface, *errs.Errs)
 	DeleteUser(string) *errs.Errs
