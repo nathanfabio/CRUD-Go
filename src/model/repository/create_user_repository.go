@@ -12,9 +12,7 @@ import (
 	"go.uber.org/zap"
 )
 
-const (
-	MONGODB_USER_COLLECTION = "MONGODB_USER_COLLECTION"
-)
+
 
 func (ur *userRepository) CreateUser(userDomain model.UserDomainInterface) (model.UserDomainInterface, *errs.Errs) {
 	logger.Info("Init createUser repository", zap.String("jouney", "createUser"))
