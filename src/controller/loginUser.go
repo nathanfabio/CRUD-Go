@@ -1,6 +1,5 @@
 package controller
 
-
 import (
 	"net/http"
 
@@ -19,6 +18,8 @@ func (uc *userControllerInterface) LoginUser(c *gin.Context) {
 		zap.String("journey", "loginUser"),
 	)
 	var userLogin request.UserLogin
+
+	
 
 	//ShouldBindJSON binds the JSON passed in the request body to the struct.
 	if err := c.ShouldBindJSON(&userLogin); err != nil {
