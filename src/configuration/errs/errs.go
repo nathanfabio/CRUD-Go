@@ -38,6 +38,14 @@ func NewBadRequestErrs(message string) *Errs {
 	}
 }
 
+func NewUnauthorizedRequestErrs(message string) *Errs {
+	return &Errs {
+		Message: message,
+		Err:     "unauthorized",
+		Code:    http.StatusUnauthorized,
+	}
+}
+
 //NewBadRequestValidationErrs create a new bad request validation error
 func NewBadRequestValidationErrs(message string, causes []Causes) *Errs {
 	return &Errs{
